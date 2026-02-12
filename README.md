@@ -64,7 +64,6 @@ These are intentionally out of scope for MVP:
 - Dispute resolution
 - Voting mechanisms
 - Multi-subscription bundling
-- Dynamic pricing
 - Pro-rated mid-cycle refunds
 - Admin rotation
 - Mainnet deployment
