@@ -1,29 +1,40 @@
-import { SupportedWallet, WalletId, WalletManager, WalletProvider } from '@txnlab/use-wallet-react'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { WalletProvider, useWallet, WalletManager, WalletId } from '@txnlab/use-wallet-react'
 import { SnackbarProvider } from 'notistack'
-import Home from './Home'
+import Dashboard from './components/Dashboard'
+import CreatePool from './components/CreatePool'
+import PoolDetails from './components/PoolDetails'
 import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
+import ConnectWallet from './components/ConnectWallet'
+import { useState } from 'react'
 
-let supportedWallets: SupportedWallet[]
-if (import.meta.env.VITE_ALGOD_NETWORK === 'localnet') {
-  const kmdConfig = getKmdConfigFromViteEnvironment()
-  supportedWallets = [
-    {
-      id: WalletId.KMD,
-      options: {
-        baseServer: kmdConfig.server,
-        token: String(kmdConfig.token),
-        port: String(kmdConfig.port),
-      },
-    },
-  ]
-} else {
-  supportedWallets = [
-    { id: WalletId.DEFLY },
-    { id: WalletId.PERA },
-    { id: WalletId.EXODUS },
-    // If you are interested in WalletConnect v2 provider
-    // refer to https://github.com/TxnLab/use-wallet for detailed integration instructions
-  ]
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { activeAddress } = useWallet()
+  const [openWalletModal, setOpenWalletModal] = useState(false)
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white font-sans">
+      <nav className="p-4 border-b border-gray-800 flex justify-between items-center bg-gray-900">
+        <Link to="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+          SubShare
+        </Link>
+        <div className="flex gap-6 items-center">
+          <Link to="/" className="hover:text-blue-400 transition">Dashboard</Link>
+          <Link to="/create" className="hover:text-blue-400 transition">Create Pool</Link>
+          <button 
+            onClick={() => setOpenWalletModal(true)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition font-medium"
+          >
+            {activeAddress ? `${activeAddress.slice(0, 6)}...${activeAddress.slice(-4)}` : "Connect Wallet"}
+          </button>
+        </div>
+      </nav>
+      <main className="container mx-auto p-8">
+        {children}
+      </main>
+      <ConnectWallet openModal={openWalletModal} closeModal={() => setOpenWalletModal(false)} />
+    </div>
+  )
 }
 
 export default function App() {
