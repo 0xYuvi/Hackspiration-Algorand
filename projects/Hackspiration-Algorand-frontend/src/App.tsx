@@ -4,9 +4,17 @@ import { SnackbarProvider } from 'notistack'
 import Dashboard from './components/Dashboard'
 import CreatePool from './components/CreatePool'
 import PoolDetails from './components/PoolDetails'
-import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 import ConnectWallet from './components/ConnectWallet'
 import { useState } from 'react'
+import { getAlgodConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
+
+// Define supported wallets
+const supportedWallets = [
+  WalletId.PERA,
+  WalletId.DEFLY,
+  WalletId.EXODUS,
+  WalletId.KIBISIS,
+]
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { activeAddress } = useWallet()
@@ -21,7 +29,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex gap-6 items-center">
           <Link to="/" className="hover:text-blue-400 transition">Dashboard</Link>
           <Link to="/create" className="hover:text-blue-400 transition">Create Pool</Link>
-          <button 
+          <button
             onClick={() => setOpenWalletModal(true)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition font-medium"
           >
@@ -42,7 +50,7 @@ export default function App() {
 
   const walletManager = new WalletManager({
     wallets: supportedWallets,
-    defaultNetwork: algodConfig.network,
+    defaultNetwork: algodConfig.network === 'mainnet' ? 'mainnet' : 'testnet',
     networks: {
       [algodConfig.network]: {
         algod: {
@@ -60,7 +68,15 @@ export default function App() {
   return (
     <SnackbarProvider maxSnack={3}>
       <WalletProvider manager={walletManager}>
-        <Home />
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/create" element={<CreatePool />} />
+              <Route path="/pool/:id" element={<PoolDetails />} />
+            </Routes>
+          </Layout>
+        </Router>
       </WalletProvider>
     </SnackbarProvider>
   )
