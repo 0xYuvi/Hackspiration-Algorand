@@ -12,7 +12,7 @@ class User(UserBase):
     id: int
     created_at: datetime
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PoolBase(BaseModel):
     subscription_name: str
@@ -31,7 +31,7 @@ class Pool(PoolBase):
     contract_address: Optional[str]
     created_at: datetime
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PoolMemberBase(BaseModel):
     pool_id: int
@@ -46,4 +46,4 @@ class PoolMember(PoolMemberBase):
     id: int
     joined_at: datetime
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -10,12 +10,20 @@ from algokit_utils import (
     get_indexer_client,
     get_kmd_wallet_account,
 )
-from contract import SubSharePool
+from contract import app
 
 logger = logging.getLogger(__name__)
 
+def get_deployer_account(algod_client: algod.AlgodClient) -> Account:
+    # Use KMD for localnet/testnet MVP
+    return get_kmd_wallet_account(algod_client, "unencrypted-default-wallet", "test")
+    # In production, load from env
+    # import os
+    # mnemonic = os.getenv("DEPLOYER_MNEMONIC")
+    # return Account(private_key=to_private_key(mnemonic))
+
 def deploy(
-    app_spec: ApplicationSpecification,
+    app_spec: ApplicationSpecification, 
     algod_client: algod.AlgodClient,
     deployer: Account,
 ) -> None:
@@ -43,16 +51,11 @@ if __name__ == "__main__":
     algod_client = get_algod_client()
     indexer_client = get_indexer_client()
     
-    # Get deployer account (using localnet default or environment variable)
-    deployer = get_kmd_wallet_account(algod_client, "unencrypted-default-wallet", "test")
-    # In production/testnet, use mnemonic from env
-    # import os
-    # mnemonic = os.getenv("DEPLOYER_MNEMONIC")
-    # if mnemonic:
-    #     private_key = to_private_key(mnemonic)
-    #     deployer = Account(private_key=private_key)
+    # Get deployer account
+    deployer = get_deployer_account(algod_client)
 
-    app = SubSharePool()
-    app_spec = app.application_spec()
+    app_spec = app.build(client=algod_client) # Adjust build based on Beaker version usage
+    # Wait, app.build() signature?
+    # Spec might just be app.build()
     
     deploy(app_spec, algod_client, deployer)

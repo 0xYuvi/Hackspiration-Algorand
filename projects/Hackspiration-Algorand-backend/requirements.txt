@@ -7,3 +7,6 @@ apscheduler
 algosdk
 pydantic-settings
 python-dotenv
+pyteal
+beaker-pyteal
+algokit-utils
