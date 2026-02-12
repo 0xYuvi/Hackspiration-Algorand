@@ -1,14 +1,47 @@
-## How to connect my web app with Algorand smart contracts?
+# Contracts Integration
 
-The following folder is reserved for the Algorand Application Clients. The clients are used to interact with instances of Algorand Smart Contracts (ASC1s) deployed on-chain.
+This directory contains the generated TypeScript clients for interacting with the specific smart contracts of the **Hackspiration-Algorand** project.
 
-To integrate this react frontend template with your smart contracts codebase, perform the following steps:
+## Generated Clients
 
-1. Generate the typed client using `algokit generate client -l typescript -o {path/to/this/folder}` or using the dedicated `link` command `algokit project link` (ensure to invoke it from the root of this react project). Using the `link` command is especially useful within workspaces that have multiple contract projects.
-2. The generated typescript client should be ready to be imported and used in this react frontend template, making it a full fledged dApp.
+### 1. `SubSharePoolClient`
+-   **Source**: `projects/Hackspiration-Algorand-contracts/smart_contracts/subshare_pool`
+-   **Usage**: Create, join, and manage subscription pools.
 
-> Please note, by default this template defines `"generate:app-clients": "algokit project link --all"` which is a shortcut to automatically link TEAL code from all `contract` projects in the workspace as typed clients into the `frontend` project that is invoking the `link` command. Refer to [documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/project/link.md) to read more about `link` command.
+### 2. `HelloWorldClient`
+-   **Source**: `projects/Hackspiration-Algorand-contracts/smart_contracts/hackspiration_algorand`
+-   **Usage**: Basic interaction testing.
 
-## **How to interact with the smart contract?**
+## Generating Clients
 
-The generated client provides a set of functions that can be used to interact with the ABI (Application Binary Interface) compliant Algorand smart contract. For example, if the smart contract has a function called `hello`, the generated client will have a function called `hello` that can be used to interact with the smart contract. Refer to a [full-stack end-to-end starter template](https://github.com/algorandfoundation/algokit-fullstack-template) for a reference example on invoking and interacting with typescript typed clients generated.
+To regenerate the clients after modifying the smart contracts:
+
+1.  Navigate to the project root or the frontend directory.
+2.  Run the following command:
+    ```bash
+    npm run generate:app-clients
+    ```
+    (This command uses `algokit project link` to automatically generate and place the clients here).
+
+## Usage Example
+
+```typescript
+import * as algokit from '@algorandfoundation/algokit-utils';
+import { SubSharePoolClient } from './SubSharePoolClient';
+
+// ... inside your component or function
+const algod = algokit.getAlgoClient();
+const indexer = algokit.getAlgoIndexerClient();
+const kmd = algokit.getAlgoKmdClient();
+
+const client = new SubSharePoolClient(
+  {
+    resolveBy: 'id',
+    id: 123, // App ID
+  },
+  algod
+);
+
+// Call a method
+const result = await client.getGlobalState();
+```
